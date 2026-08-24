@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: 'PF Precheck - Know before you claim',
   description:
     'A synthetic-data prototype that checks EPF claim readiness, explains rejection reasons, and prepares an evidence-backed grievance.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
