@@ -1,5 +1,5 @@
-import { ClaimCopilot } from './components/claim-copilot';
+import { AppShell } from './components/app-shell';
 
 export default function Home() {
-  return <ClaimCopilot />;
+  return <AppShell />;
 }

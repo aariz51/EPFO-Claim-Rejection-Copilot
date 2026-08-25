@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Atkinson_Hyperlegible, Geist_Mono } from 'next/font/google';
+import { Atkinson_Hyperlegible, Geist_Mono, Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
 
 const atkinson = Atkinson_Hyperlegible({
@@ -11,6 +11,13 @@ const atkinson = Atkinson_Hyperlegible({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+// Atkinson Hyperlegible has no Devanagari, and half this audience needs Hindi.
+const notoDeva = Noto_Sans_Devanagari({
+  variable: '--font-deva',
+  weight: ['400', '600', '700'],
+  subsets: ['devanagari'],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${atkinson.variable} ${geistMono.variable} antialiased`}
+        className={`${atkinson.variable} ${geistMono.variable} ${notoDeva.variable} antialiased`}
       >
         {children}
       </body>
