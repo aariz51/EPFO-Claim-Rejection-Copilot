@@ -41,21 +41,27 @@ export default defineConfig(async () => {
   process.env.WRANGLER_LOG_PATH ??= '.wrangler/logs';
   process.env.MINIFLARE_REGISTRY_PATH ??= '.wrangler/registry';
 
-  // Wrangler snapshots its log path while the Cloudflare plugin is imported.
-  const { cloudflare } = await import('@cloudflare/vite-plugin');
+  // The Cloudflare plugin is what turns the server build into a Worker bundle.
+  // For Vercel we want a plain Node server instead, so it is left out entirely
+  // rather than configured differently. Set DEPLOY_TARGET=vercel to switch.
+  const target = process.env.DEPLOY_TARGET ?? 'cloudflare';
+  const cloudflarePlugins = [];
+  if (target !== 'vercel') {
+    // Wrangler snapshots its log path while the Cloudflare plugin is imported.
+    const { cloudflare } = await import('@cloudflare/vite-plugin');
+    cloudflarePlugins.push(
+      cloudflare({
+        viteEnvironment: { name: 'rsc', childEnvironments: ['ssr'] },
+        config: localBindingConfig,
+      })
+    );
+  }
 
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
-    plugins: [
-      vinext(),
-      sites(),
-      cloudflare({
-        viteEnvironment: { name: 'rsc', childEnvironments: ['ssr'] },
-        config: localBindingConfig,
-      }),
-    ],
+    plugins: [vinext(), sites(), ...cloudflarePlugins],
   };
 });

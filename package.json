@@ -10,7 +10,8 @@
     "build": "vinext build",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "test": "node --experimental-strip-types --test app/lib/*.test.ts"
+    "test": "node --experimental-strip-types --test app/lib/*.test.ts",
+    "build:vercel": "node scripts/build-vercel.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.34.0",
