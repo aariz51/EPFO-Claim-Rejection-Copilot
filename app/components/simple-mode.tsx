@@ -16,6 +16,21 @@ import type { AssistPrefs } from '../lib/assist';
 import { speak, stopSpeaking, t } from '../lib/assist';
 import { assessStatus, delayGrievance, delayRti, type StatusStage } from '../lib/claim-status';
 
+interface DecodePayload {
+  rule_id: string;
+  title: string;
+  plain_en: string;
+  plain_hi: string;
+  required_value: string | null;
+  actual_value: string | null;
+  remedy_code: string;
+  remedy_en: string;
+  responsible_owner: string;
+  confidence: 'high' | 'medium' | 'low';
+  source: 'rules' | 'openai' | 'rules-fallback';
+  note?: string;
+}
+
 type Journey = null | 'before' | 'waiting' | 'rejected';
 
 /**
@@ -44,6 +59,10 @@ export function SimpleMode({
   // Fixed for the demo record. The engine takes it as an input either way.
   const amount = 120000;
   const [doc, setDoc] = useState<'none' | 'grievance' | 'rti'>('none');
+  const [rejectText, setRejectText] = useState('');
+  const [decoded, setDecoded] = useState<DecodePayload | null>(null);
+  const [decoding, setDecoding] = useState(false);
+  const [decodeError, setDecodeError] = useState<string | null>(null);
 
   const liveRef = useRef<HTMLDivElement>(null);
 
@@ -161,15 +180,13 @@ export function SimpleMode({
     );
   }
 
-  if (journey === 'before' || journey === 'rejected') {
-    // These two already have a strong detailed flow. Hand over rather than
-    // build a worse second copy of it.
+  if (journey === 'before') {
+    // Pre-check needs claim type, purpose and amount. The detailed view already
+    // does that well, so hand over rather than build a worse second copy.
     return (
       <div className="simple-wrap">
         <BackLink onClick={reset} label={t('back', lang)} />
-        <h1 className="simple-question">
-          {journey === 'before' ? t('opt_before', lang) : t('opt_rejected', lang)}
-        </h1>
+        <h1 className="simple-question">{t('opt_before', lang)}</h1>
         <p className="simple-lead">
           {lang === 'hi'
             ? 'इसके लिए हमें कुछ और जानकारी चाहिए। विस्तृत जानकारी खोलिए।'
@@ -177,6 +194,131 @@ export function SimpleMode({
         </p>
         <button type="button" className="simple-primary" onClick={onDetailed}>
           {t('detailed', lang)} <ArrowRight size={22} aria-hidden />
+        </button>
+      </div>
+    );
+  }
+
+  if (journey === 'rejected') {
+    const runDecode = async () => {
+      if (!rejectText.trim()) return;
+      setDecoding(true);
+      setDecodeError(null);
+      try {
+        const r = await fetch('/api/decode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: rejectText, lang }),
+        });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error ?? 'Could not read that message');
+        setDecoded(j as DecodePayload);
+      } catch (e) {
+        setDecodeError(e instanceof Error ? e.message : 'Something went wrong');
+      } finally {
+        setDecoding(false);
+      }
+    };
+
+    return (
+      <div className="simple-wrap wide">
+        <BackLink onClick={reset} label={t('back', lang)} />
+        <h1 className="simple-question">
+          {lang === 'hi' ? 'रिजेक्शन का संदेश यहाँ लिखिए' : 'Paste the rejection message here'}
+        </h1>
+        <p className="simple-lead">
+          {lang === 'hi'
+            ? 'जो भी एसएमएस या टिप्पणी मिली है, जस की तस चिपका दीजिए। हम उसे आसान भाषा में समझाएंगे।'
+            : 'Paste the SMS or the remark exactly as you received it. We will turn it into plain words.'}
+        </p>
+
+        <textarea
+          className="simple-textarea"
+          rows={4}
+          value={rejectText}
+          onChange={(e) => setRejectText(e.target.value)}
+          placeholder={
+            lang === 'hi'
+              ? 'जैसे: Claim rejected related to migration to CITES.'
+              : 'For example: Claim rejected related to migration to CITES.'
+          }
+          aria-label={lang === 'hi' ? 'रिजेक्शन का संदेश' : 'Rejection message'}
+        />
+
+        <button type="button" className="simple-primary" onClick={runDecode} disabled={decoding || !rejectText.trim()}>
+          {decoding
+            ? lang === 'hi' ? 'समझा जा रहा है...' : 'Reading it...'
+            : lang === 'hi' ? 'आसान भाषा में समझाइए' : 'Explain this to me'}
+        </button>
+
+        {decodeError && <p className="decode-error" role="alert">{decodeError}</p>}
+
+        {decoded && !decoding && (
+          <div className="decode-card">
+            <div className="decode-head">
+              <span className={`decode-src ${decoded.source}`}>
+                {decoded.source === 'openai'
+                  ? lang === 'hi' ? 'ओपनएआई मॉडल से' : 'Decoded by an OpenAI model'
+                  : decoded.source === 'rules'
+                    ? lang === 'hi' ? 'सत्यापित नियम से' : 'Matched a verified rule'
+                    : lang === 'hi' ? 'अंतर्निहित फ़ॉलबैक' : 'Built-in fallback'}
+              </span>
+              <span className={`decode-conf ${decoded.confidence}`}>
+                {lang === 'hi' ? 'भरोसा' : 'confidence'}: {decoded.confidence}
+              </span>
+            </div>
+
+            <h2 className="decode-title">{decoded.title}</h2>
+            <p className="decode-plain">{lang === 'hi' && decoded.plain_hi ? decoded.plain_hi : decoded.plain_en}</p>
+
+            {(decoded.required_value || decoded.actual_value) && (
+              <div className="decode-gap">
+                <div>
+                  <p className="decode-gap-k">{lang === 'hi' ? 'नियम चाहता है' : 'Rule requires'}</p>
+                  <p className="decode-gap-v">{decoded.required_value ?? '-'}</p>
+                </div>
+                <div>
+                  <p className="decode-gap-k">{lang === 'hi' ? 'आपके रिकॉर्ड में' : 'Your record has'}</p>
+                  <p className="decode-gap-v">{decoded.actual_value ?? '-'}</p>
+                </div>
+              </div>
+            )}
+
+            <p className="decode-do">
+              <strong>{lang === 'hi' ? 'अब क्या कीजिए: ' : 'What to do: '}</strong>
+              {decoded.remedy_en}
+            </p>
+            <p className="decode-owner">
+              {lang === 'hi' ? 'किसे ठीक करना है: ' : 'Who must fix it: '}
+              <strong>{decoded.responsible_owner}</strong>
+            </p>
+
+            {decoded.note && <p className="decode-note">{decoded.note}</p>}
+
+            {/* The contract this project argues EPFO should return directly. */}
+            <details className="decode-contract">
+              <summary>
+                {lang === 'hi'
+                  ? 'ईपीएफओ को यही जानकारी सीधे देनी चाहिए'
+                  : 'This is what EPFO should return directly'}
+              </summary>
+              <pre>{JSON.stringify(
+                {
+                  rule_id: decoded.rule_id,
+                  required_value: decoded.required_value,
+                  actual_value: decoded.actual_value,
+                  remedy_code: decoded.remedy_code,
+                  responsible_owner: decoded.responsible_owner,
+                },
+                null,
+                2
+              )}</pre>
+            </details>
+          </div>
+        )}
+
+        <button type="button" className="simple-ghost" onClick={reset}>
+          <ArrowLeft size={20} aria-hidden /> {lang === 'hi' ? 'शुरू से' : 'Start again'}
         </button>
       </div>
     );
