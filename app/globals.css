@@ -515,3 +515,31 @@ button { cursor: pointer; }
 .spec-pill.live { background: var(--success-soft); color: #0d5f47; }
 .spec-model-cost { margin: 0; font-family: var(--font-geist-mono), monospace; font-size: 12.5px; line-height: 1.6; color: var(--muted-ink); }
 .spec-model-note { color: var(--muted-ink); font-size: 13.5px; }
+
+/* ---- the pre-file journey in simple mode ----
+   Named checks with the rule's own numbers, so a member sees "the rule wants 60
+   months, your record says 28" rather than "you may not be eligible". */
+.verdict-card { margin-top: 18px; padding: 18px 20px; border-radius: 12px; border: 2px solid; }
+.verdict-card.ok { border-color: #0d5f47; background: var(--success-soft); }
+.verdict-card.warn { border-color: #a64b16; background: var(--warning-soft); }
+.verdict-head { margin: 0; font-size: calc(24px * var(--scale)); font-weight: 700; line-height: 1.25; }
+.verdict-card.ok .verdict-head { color: #0d5f47; }
+.verdict-card.warn .verdict-head { color: #7d3a10; }
+.verdict-sub { margin: 6px 0 0; font-size: calc(15px * var(--scale)); color: #4a5866; }
+.prefile-max { margin: 16px 0 0; font-size: calc(16px * var(--scale)); color: #3d4b58; }
+.prefile-max strong { font-size: calc(20px * var(--scale)); color: var(--ink); font-variant-numeric: tabular-nums; }
+.prefile-checks { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 12px; }
+.prefile-checks .chk { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.prefile-checks .chk.fail { border-color: #e6c9a2; background: #fffaf2; }
+.chk-mark { font-size: calc(20px * var(--scale)); font-weight: 700; line-height: 1.2; }
+.chk.pass .chk-mark { color: #0d5f47; }
+.chk.fail .chk-mark { color: #a64b16; }
+.chk-label { margin: 0; font-size: calc(17px * var(--scale)); font-weight: 700; line-height: 1.35; }
+.chk-nums { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: calc(15px * var(--scale)); color: #3d4b58; font-variant-numeric: tabular-nums; }
+.chk-nums em { font-style: normal; color: var(--muted-ink); font-size: calc(13px * var(--scale)); display: block; }
+.chk-gap { font-weight: 700; color: #a64b16; }
+.chk-remedy { margin: 10px 0 0; font-size: calc(15px * var(--scale)); line-height: 1.55; color: #4a3a2a; }
+.chk-rule { margin: 8px 0 0; font-family: var(--font-geist-mono), monospace; font-size: calc(12px * var(--scale)); color: var(--muted-ink); }
+.simple-secondary { margin-top: 22px; min-height: 54px; padding: 0 22px; border-radius: 10px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-size: calc(17px * var(--scale)); font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
+:root[data-contrast='high'] .prefile-checks .chk { border-width: 2px; border-color: #000; background: #fff; }
+:root[data-contrast='high'] .chk-nums, :root[data-contrast='high'] .chk-remedy, :root[data-contrast='high'] .chk-rule { color: #000; }

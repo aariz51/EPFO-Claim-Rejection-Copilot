@@ -15,6 +15,12 @@ import {
 import type { AssistPrefs } from '../lib/assist';
 import { speak, stopSpeaking, t } from '../lib/assist';
 import { assessStatus, delayGrievance, delayRti, type StatusStage } from '../lib/claim-status';
+import {
+  evaluateClaim,
+  formatCurrency,
+  sampleRecord,
+  type Form31Purpose,
+} from '../lib/claim-engine';
 
 interface DecodePayload {
   rule_id: string;
@@ -59,6 +65,8 @@ export function SimpleMode({
   // Fixed for the demo record. The engine takes it as an input either way.
   const amount = 120000;
   const [doc, setDoc] = useState<'none' | 'grievance' | 'rti'>('none');
+  const [purpose, setPurpose] = useState<Form31Purpose | null>(null);
+  const [wantAmount, setWantAmount] = useState<number | null>(null);
   const [rejectText, setRejectText] = useState('');
   const [decoded, setDecoded] = useState<DecodePayload | null>(null);
   const [decoding, setDecoding] = useState(false);
@@ -138,6 +146,8 @@ export function SimpleMode({
 
   const reset = () => {
     setJourney(null);
+    setPurpose(null);
+    setWantAmount(null);
     setStep(0);
     setFiledDays(null);
     setDoc('none');
@@ -185,20 +195,106 @@ export function SimpleMode({
   }
 
   if (journey === 'before') {
-    // Pre-check needs claim type, purpose and amount. The detailed view already
-    // does that well, so hand over rather than build a worse second copy.
+    /* The pre-file journey, run in simple mode rather than handed off.
+       Every check below is the engine's own rule with its real numbers, so the
+       member sees "the rule wants 60 months, your record says 28" rather than
+       "you may not be eligible". */
+    const PURPOSES: { id: Form31Purpose; key: string }[] = [
+      { id: 'housing', key: 'p_housing' },
+      { id: 'illness', key: 'p_illness' },
+      { id: 'marriage', key: 'p_marriage' },
+      { id: 'education', key: 'p_education' },
+    ];
+
+    if (!purpose) {
+      return (
+        <div className="simple-wrap">
+          <BackLink onClick={reset} label={t('back', lang)} />
+          <h1 className="simple-question">{t('q_purpose', lang)}</h1>
+          <div className="simple-choices">
+            {PURPOSES.map((p) => (
+              <BigChoice
+                key={p.id}
+                icon={<Banknote size={30} aria-hidden />}
+                title={t(p.key, lang)}
+                sub=""
+                tone="teal"
+                onClick={() => setPurpose(p.id)}
+              />
+            ))}
+          </div>
+          <p className="simple-note">{t('synthetic', lang)}</p>
+        </div>
+      );
+    }
+
+    if (wantAmount === null) {
+      const presets = [50000, 100000, 200000, 400000];
+      return (
+        <div className="simple-wrap">
+          <BackLink onClick={() => setPurpose(null)} label={t('back', lang)} />
+          <h1 className="simple-question">{t('q_howmuch', lang)}</h1>
+          <div className="simple-choices">
+            {presets.map((a) => (
+              <BigChoice
+                key={a}
+                icon={<Banknote size={30} aria-hidden />}
+                title={formatCurrency(a)}
+                sub=""
+                tone="teal"
+                onClick={() => setWantAmount(a)}
+              />
+            ))}
+          </div>
+          <p className="simple-note">{t('synthetic', lang)}</p>
+        </div>
+      );
+    }
+
+    const report = evaluateClaim(sampleRecord, '31', purpose, wantAmount);
+    const failing = report.checks.filter((c) => c.status !== 'pass');
+
     return (
       <div className="simple-wrap">
-        <BackLink onClick={reset} label={t('back', lang)} />
-        <h1 className="simple-question">{t('opt_before', lang)}</h1>
-        <p className="simple-lead">
-          {lang === 'hi'
-            ? 'इसके लिए हमें कुछ और जानकारी चाहिए। विस्तृत जानकारी खोलिए।'
-            : 'This one needs a few more details. Open the detailed view.'}
+        <BackLink onClick={() => setWantAmount(null)} label={t('back', lang)} />
+        <div className={report.status === 'ready' ? 'verdict-card ok' : 'verdict-card warn'}>
+          <p className="verdict-head">
+            {t(report.status === 'ready' ? 'will_clear' : 'will_fail', lang)}
+          </p>
+          <p className="verdict-sub">
+            {report.checks.length} {t('checks_ran', lang)}
+            {failing.length > 0 ? ` \u00b7 ${failing.length}` : ''}
+          </p>
+        </div>
+
+        <p className="prefile-max">
+          {t('max_eligible', lang)}: <strong>{formatCurrency(report.maximumEligibleAmount)}</strong>
         </p>
-        <button type="button" className="simple-primary" onClick={onDetailed}>
-          {t('detailed', lang)} <ArrowRight size={22} aria-hidden />
+
+        <ol className="prefile-checks">
+          {report.checks.map((c) => (
+            <li key={c.id} className={c.status === 'pass' ? 'chk pass' : 'chk fail'}>
+              <span className="chk-mark" aria-hidden>{c.status === 'pass' ? '\u2713' : '\u2717'}</span>
+              <div>
+                <p className="chk-label">{c.label}</p>
+                <div className="chk-nums">
+                  <span><em>{t('rule_wanted', lang)}</em> {c.required}</span>
+                  <span><em>{t('you_have', lang)}</em> {c.actual}</span>
+                  {c.gap ? <span className="chk-gap">{c.gap}</span> : null}
+                </div>
+                {c.status !== 'pass' && c.remedy ? (
+                  <p className="chk-remedy"><strong>{t('fix_this', lang)}: </strong>{c.remedy}</p>
+                ) : null}
+                <p className="chk-rule">{c.ruleId}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <button type="button" className="simple-secondary" onClick={onDetailed}>
+          {t('detailed', lang)} <ArrowRight size={20} aria-hidden />
         </button>
+        <p className="simple-note">{t('synthetic', lang)}</p>
       </div>
     );
   }
