@@ -198,7 +198,7 @@ async function main() {
           {
             origin: BASE,
             localStorage: [
-              { name: 'pf-assist-prefs', value: prefs({ mode: n === 8 ? 'detailed' : 'simple' }) },
+              { name: 'pf-assist-prefs', value: prefs({ mode: 'simple' }) },
               { name: 'gh-banner', value: 'hidden' },
             ],
           },
