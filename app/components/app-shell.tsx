@@ -46,7 +46,8 @@ export function AppShell() {
     if (typeof document === 'undefined') return;
     document.documentElement.style.setProperty('--scale', String(SCALE_FACTOR[prefs.scale]));
     document.documentElement.lang = prefs.lang === 'hi' ? 'hi' : 'en';
-  }, [prefs.scale, prefs.lang]);
+    document.documentElement.dataset.contrast = prefs.contrast;
+  }, [prefs.scale, prefs.lang, prefs.contrast]);
 
   useEffect(() => () => stopSpeaking(), []);
 

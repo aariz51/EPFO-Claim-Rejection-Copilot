@@ -21,11 +21,19 @@
 export type Lang = 'en' | 'hi';
 export type Mode = 'simple' | 'detailed';
 export type TextScale = 'normal' | 'large' | 'largest';
+/**
+ * A genuine high-contrast mode, not a dark theme.
+ * Pure black on pure white is 21:1, the maximum the sRGB gamut allows and well
+ * beyond the 7:1 that WCAG AAA asks for. It exists for low vision and for the
+ * daylight-on-a-cheap-phone-screen case, which is most of this audience.
+ */
+export type Contrast = 'normal' | 'high';
 
 export interface AssistPrefs {
   lang: Lang;
   mode: Mode;
   scale: TextScale;
+  contrast: Contrast;
   speak: boolean;
   /** someone is filling this in on behalf of the member */
   assisted: boolean;
@@ -35,6 +43,7 @@ export const DEFAULT_PREFS: AssistPrefs = {
   lang: 'en',
   mode: 'simple',
   scale: 'normal',
+  contrast: 'normal',
   speak: false,
   assisted: false,
 };
@@ -129,6 +138,9 @@ export const T: Dict = {
     en: 'Before you apply, while you wait, after a rejection',
     hi: 'आवेदन से पहले, इंतज़ार के दौरान, और रिजेक्शन के बाद',
   },
+  contrastOn: { en: 'High contrast', hi: 'गहरा कंट्रास्ट' },
+  contrastOff: { en: 'Normal contrast', hi: 'सामान्य कंट्रास्ट' },
+
   specLink: {
     en: 'What EPFO should return instead',
     hi: 'ईपीएफओ को इसके बदले क्या देना चाहिए',

@@ -1,6 +1,6 @@
 'use client';
 
-import { Volume2, VolumeX, Type, Users, Languages } from 'lucide-react';
+import { Volume2, VolumeX, Type, Users, Languages, Contrast as CircleHalf } from 'lucide-react';
 import type { AssistPrefs, Lang } from '../lib/assist';
 import { SCALE_FACTOR, t } from '../lib/assist';
 
@@ -76,6 +76,19 @@ export function AssistBar({
               <i key={s} className={SCALE_FACTOR[s] <= SCALE_FACTOR[prefs.scale] ? 'lit' : ''} />
             ))}
           </span>
+        </button>
+
+        {/* Pure black on white, 21:1. For low vision and for a cheap phone
+            screen in daylight, which is most of this audience. */}
+        <button
+          type="button"
+          className={`assist-chip wide ${prefs.contrast === 'high' ? 'on' : ''}`}
+          onClick={() => set({ contrast: prefs.contrast === 'high' ? 'normal' : 'high' })}
+          aria-pressed={prefs.contrast === 'high'}
+          aria-label={t(prefs.contrast === 'high' ? 'contrastOff' : 'contrastOn', lang)}
+        >
+          <CircleHalf size={18} aria-hidden />
+          {t('contrastOn', lang)}
         </button>
 
         {/* Assisted use is the norm here, not the exception. A CSC operator, an

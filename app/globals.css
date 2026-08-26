@@ -468,3 +468,40 @@ button { cursor: pointer; }
    click away on /proposal. It is the thing that separates a redesign from a fix. */
 .lp-system-claim { margin: 26px 0 0; max-width: 42rem; padding-left: 16px; border-left: 3px solid var(--accent); font-size: 16px; line-height: 1.7; color: #3d4b58; }
 .lp-system-claim strong { color: var(--ink); }
+
+/* ---- high contrast ----
+   Not a dark theme. Pure black on pure white is 21:1, the ceiling of the sRGB
+   gamut and three times what WCAG AAA asks for. Borders thicken too, because at
+   low vision a 1px hairline disappears before the text does. */
+:root[data-contrast='high'] {
+  --ink: #000000;
+  --muted-ink: #000000;
+  --line: #000000;
+  --surface: #ffffff;
+  --canvas: #ffffff;
+  --accent: #00308f;
+  --accent-dark: #001f5c;
+  --accent-soft: #ffffff;
+  --success: #005c3d;
+  --success-soft: #ffffff;
+  --warning: #8a3200;
+  --warning-soft: #ffffff;
+  --danger: #a30000;
+}
+:root[data-contrast='high'] body { background: #fff; color: #000; }
+:root[data-contrast='high'] .claim-option,
+:root[data-contrast='high'] .ladder li,
+:root[data-contrast='high'] .penal-card,
+:root[data-contrast='high'] .owner-card,
+:root[data-contrast='high'] .assist-chip,
+:root[data-contrast='high'] .simple-choice { border-width: 2px; border-color: #000; background: #fff; }
+:root[data-contrast='high'] .simple-choice-sub,
+:root[data-contrast='high'] .ladder-detail,
+:root[data-contrast='high'] .penal-body,
+:root[data-contrast='high'] .owner-does,
+:root[data-contrast='high'] .field-help,
+:root[data-contrast='high'] .spec-p { color: #000; }
+:root[data-contrast='high'] .primary-action,
+:root[data-contrast='high'] .simple-primary { background: #000; color: #fff; border: 2px solid #000; }
+:root[data-contrast='high'] .assist-chip.on { background: #000; color: #fff; }
+:root[data-contrast='high'] :focus-visible { outline: 4px solid #000; outline-offset: 3px; }
