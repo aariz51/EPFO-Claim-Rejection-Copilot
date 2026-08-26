@@ -122,8 +122,8 @@ type Dict = Record<string, { en: string; hi: string }>;
 export const T: Dict = {
   appName: { en: 'PF Precheck', hi: 'पीएफ प्रीचेक' },
   tagline: {
-    en: 'Find out before you apply',
-    hi: 'आवेदन से पहले जान लीजिए',
+    en: 'Before you apply, while you wait, after a rejection',
+    hi: 'आवेदन से पहले, इंतज़ार के दौरान, और रिजेक्शन के बाद',
   },
 
   q_what: { en: 'What do you want to do?', hi: 'आप क्या करना चाहते हैं?' },
@@ -140,16 +140,16 @@ export const T: Dict = {
     hi: 'मैंने आवेदन किया, पैसा नहीं आया',
   },
   opt_waiting_sub: {
-    en: 'See if it is late and what actually works',
-    hi: 'देखिए कि देरी है या नहीं, और क्या करना चाहिए',
+    en: "See if it is past EPFO's own 20 day limit",
+    hi: 'देखिए कि ईपीएफओ की 20 दिन की सीमा पार हुई या नहीं',
   },
   opt_rejected: {
     en: 'My claim was rejected',
     hi: 'मेरा क्लेम रिजेक्ट हो गया',
   },
   opt_rejected_sub: {
-    en: 'Understand the reason in plain words',
-    hi: 'कारण आसान भाषा में समझिए',
+    en: 'Get the exact number the rule wanted, in plain words',
+    hi: 'नियम को कितना चाहिए था, वह सटीक संख्या आसान भाषा में',
   },
 
   q_amount: { en: 'How much do you need?', hi: 'आपको कितना पैसा चाहिए?' },
