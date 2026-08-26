@@ -95,14 +95,18 @@ const BEATS = {
     await sleep(secs * 1000 - 6900);
   },
 
-  // "one question at a time, large type, reads itself aloud"
+  // "before you file it runs the rules and shows the gap as numbers"
   3: async (page, secs) => {
     await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
-    await sleep(2200);
-    await page.getByRole('button', { name: /Bigger text/ }).click();
-    await sleep(1900);
-    await page.getByRole('button', { name: /Bigger text/ }).click();
-    await sleep(secs * 1000 - 6100);
+    await sleep(1400);
+    await page.getByRole('button', { name: /I want to take money out/ }).click();
+    await sleep(900);
+    await page.getByRole('button', { name: /House or flat/ }).click();
+    await sleep(800);
+    await page.getByRole('button', { name: /4,00,000|400,000/ }).first().click();
+    await sleep(1600);
+    await page.evaluate(() => document.querySelector('.prefile-checks')?.scrollIntoView({ block: 'start' }));
+    await sleep(secs * 1000 - 6700);   // the named checks, rule wants vs record says
   },
 
   // "day twenty seven of a twenty day limit"
@@ -135,17 +139,20 @@ const BEATS = {
     await sleep(secs * 1000 - 8800);
   },
 
-  // "built for someone who cannot read the form: scale, then Hindi advice"
+  // "type that scales, a contrast mode at 21 to 1, and Hindi that covers the advice"
   7: async (page, secs) => {
     await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
     await sleep(900);
     await page.getByRole('button', { name: /Bigger text/ }).click();
-    await sleep(1500);
+    await sleep(1200);
+    await page.getByRole('button', { name: /High contrast/i }).click();
+    await sleep(2000);                 // the 21:1 mode, visibly
+    await page.getByRole('button', { name: /contrast/i }).first().click();
+    await sleep(600);
     await page.getByRole('button', { name: 'हिंदी' }).click();
-    await sleep(2000);
+    await sleep(1600);
     await toVerdict(page, true);
-    await glide(page, 520, 2200);
-    await sleep(secs * 1000 - 9600);
+    await sleep(secs * 1000 - 9500);
   },
 
   // "rule table first, model only on the rest, labelled either way"

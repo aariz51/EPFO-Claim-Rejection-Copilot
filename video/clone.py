@@ -74,8 +74,9 @@ TAKES: dict[int, str] = {
     2: "But EPFO already promised to settle a complete claim in twenty days. "
        "Almost nobody is told that, and nobody is told what happens when it passes.",
 
-    3: "PF Precheck asks one question at a time, in large type, and reads itself aloud, "
-       "because the median member is not the person who enjoys a dashboard.",
+    3: "Before you file, it runs the rules against your record and shows the gap "
+       "as numbers. The rule wants sixty months. Your record says twenty eight. "
+       "Not you may not be eligible. The actual figures, and what to fix first.",
 
     4: "This claim is on day twenty seven of a twenty day limit. Seven days past.",
 
@@ -89,10 +90,10 @@ TAKES: dict[int, str] = {
        "It names the role holding the file, and writes the grievance "
        "with that figure already in it.",
 
-    7: "Every screen here was built for someone who cannot read the official form. "
-       "One question at a time, large type that scales twice without breaking, "
-       "and Hindi that covers the advice and the drafted documents, "
-       "not just the button labels.",
+    7: "Every screen was built for someone who cannot read the official form. "
+       "One question at a time, type that scales twice, a contrast mode at "
+       "twenty one to one, and Hindi that covers the advice and the drafted "
+       "documents, not just the button labels.",
 
     8: "On the build. Known rejection reasons match a deterministic rule table, "
        "so the same input always returns the same answer. "
@@ -100,9 +101,10 @@ TAKES: dict[int, str] = {
        "and its reply is validated into a fixed shape before anyone sees it. "
        "The app labels which of the two answered you.",
 
-    9: "But the real fix is not this app. EPFO returns a sentence where it should "
+    9: "But the real fix is not this app. E P F O returns a sentence where it should "
        "return a record. We wrote the four fields that would make this unnecessary, "
-       "and none of them need a new system. Every claim here is synthetic.",
+       "and named which OpenAI model does what, with what it costs. "
+       "Every claim here is synthetic.",
 }
 
 
