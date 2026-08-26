@@ -83,6 +83,11 @@ export default function Landing() {
           that limit, names the role holding your file, works out what the delay is worth in
           rupees, and writes the grievance that says so.
         </p>
+        <p className="lp-system-claim">
+          <strong>Not a replacement portal.</strong> Four fields added to a response the
+          member portal already returns, and a clock EPFO has already committed to. No new
+          system, no rule change, no naming of any individual officer.
+        </p>
         <div className="lp-cta-row">
           <a href="/app" className="lp-cta">
             Open PF Precheck &rarr;

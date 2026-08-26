@@ -464,3 +464,7 @@ button { cursor: pointer; }
 .lp-cta-light:hover { background: #1d7fb4; }
 .lp-cta-ghost-light { background: transparent; border-color: #3b5666; color: #e7eef4; }
 .lp-cta-ghost-light:hover { border-color: #5b7a8c; }
+/* claimsetu's lesson: the system-level claim belongs on the landing page, not one
+   click away on /proposal. It is the thing that separates a redesign from a fix. */
+.lp-system-claim { margin: 26px 0 0; max-width: 42rem; padding-left: 16px; border-left: 3px solid var(--accent); font-size: 16px; line-height: 1.7; color: #3d4b58; }
+.lp-system-claim strong { color: var(--ink); }
