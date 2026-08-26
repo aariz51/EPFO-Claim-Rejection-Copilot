@@ -149,6 +149,7 @@ export function SimpleMode({
     return (
       <div className="simple-wrap">
         <p className="simple-kicker">{t('tagline', lang)}</p>
+        <p className="simple-kicker-sub">{t('taglineSub', lang)}</p>
         <h1 className="simple-question">{t('q_what', lang)}</h1>
 
         <div className="simple-choices">
@@ -176,6 +177,9 @@ export function SimpleMode({
         </div>
 
         <p className="simple-note">{t('synthetic', lang)}</p>
+        <p className="simple-spec-link">
+          <a href="/proposal">{t('specLink', lang)} &rarr;</a>
+        </p>
       </div>
     );
   }
@@ -442,10 +446,28 @@ export function SimpleMode({
           <div>
             <p className="penal-head">
               {lang === 'hi'
-                ? '12% दंडात्मक ब्याज लागू हो सकता है'
-                : '12% penal interest may apply'}
+                ? 'इस देरी की कीमत, आपके क्लेम पर'
+                : 'What this delay is worth, on your claim'}
             </p>
-            <p className="penal-body">{verdict.penalInterest.note}</p>
+            {verdict.penalInterest.amount > 0 && (
+              <p className="penal-amount">
+                {new Intl.NumberFormat('en-IN', {
+                  style: 'currency',
+                  currency: 'INR',
+                  maximumFractionDigits: 0,
+                }).format(verdict.penalInterest.amount)}
+              </p>
+            )}
+            <p className="penal-body">
+              {lang === 'hi'
+                ? `${verdict.overdueBy} दिन की देरी पर 12% सालाना की दर से, आपके क्लेम की रकम पर। यह रकम विभाग से नहीं, ज़िम्मेदार अधिकारी से वसूली जा सकती है। यही आपकी असली पकड़ है।`
+                : `At 12% a year, on your claim amount, for the ${verdict.overdueBy} day${verdict.overdueBy === 1 ? '' : 's'} you are past the limit. It is recoverable from the responsible official rather than from the department. That is the leverage.`}
+            </p>
+            <p className="penal-body penal-note">
+              {lang === 'hi'
+                ? 'यह अनुमान है, अंतिम गणना नहीं। शिकायत में यह आंकड़ा लिखिए और ईपीएफओ से इसकी जांच करने को कहिए।'
+                : 'This is an estimate to put in writing, not a final settlement figure. Quote it and ask EPFO to examine it.'}
+            </p>
           </div>
         </div>
       )}

@@ -58,6 +58,26 @@ test('penal interest becomes citable only past the charter limit', () => {
   assert.equal(late.penalInterest.ratePercent, 12);
 });
 
+test('penal interest is quantified in rupees for this claim and this delay', () => {
+  const v = assessStatus(base({ filedOn: daysAgo(50), amount: 120000 }));
+  // 30 days past the 20 day charter limit, 12% a year on Rs 1,20,000.
+  const expected = Math.round((120000 * 0.12 * v.overdueBy) / 365);
+  assert.equal(v.penalInterest.amount, expected);
+  assert.ok(v.penalInterest.amount > 0, 'a late claim must carry a rupee figure');
+});
+
+test('penal interest is zero before the limit, so nothing is overclaimed', () => {
+  assert.equal(assessStatus(base({ filedOn: daysAgo(10) })).penalInterest.amount, 0);
+});
+
+test('the grievance quotes the rupee figure and calls it the member calculation', () => {
+  const input = base({ filedOn: daysAgo(60), amount: 250000 });
+  const v = assessStatus(input);
+  const letter = delayGrievance(input, v, 'CLAIM-TEST-1');
+  assert.match(letter, /works out to approximately/);
+  assert.match(letter, /my own calculation/);
+});
+
 test('a severely delayed claim unlocks the whole ladder', () => {
   const v = assessStatus(base({ filedOn: daysAgo(95) }));
   assert.equal(v.severity, 'severe');

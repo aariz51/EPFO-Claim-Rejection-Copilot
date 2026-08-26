@@ -122,8 +122,16 @@ type Dict = Record<string, { en: string; hi: string }>;
 export const T: Dict = {
   appName: { en: 'PF Precheck', hi: 'पीएफ प्रीचेक' },
   tagline: {
+    en: 'It is your money. This gives you something to hold them to.',
+    hi: 'पैसा आपका है। यह आपको उन्हें पकड़ने का आधार देता है।',
+  },
+  taglineSub: {
     en: 'Before you apply, while you wait, after a rejection',
     hi: 'आवेदन से पहले, इंतज़ार के दौरान, और रिजेक्शन के बाद',
+  },
+  specLink: {
+    en: 'What EPFO should return instead',
+    hi: 'ईपीएफओ को इसके बदले क्या देना चाहिए',
   },
 
   q_what: { en: 'What do you want to do?', hi: 'आप क्या करना चाहते हैं?' },

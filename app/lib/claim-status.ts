@@ -58,8 +58,20 @@ export interface StatusVerdict {
   severity: 'on-track' | 'watch' | 'breached' | 'severe';
   headline: string;
   summary: string;
-  /** penal interest the member can point at, if past the charter limit */
-  penalInterest: { applies: boolean; ratePercent: number; note: string };
+  /**
+   * Penal interest the member can point at, once past the charter limit.
+   *
+   * `amount` is the rupee figure for THIS claim and THIS delay. A member told
+   * "12% penal interest applies" does nothing with that. A member told the
+   * delay is currently worth Rs 1,184 to them, and that it is recoverable from
+   * a named role rather than from the department, writes the grievance.
+   */
+  penalInterest: {
+    applies: boolean;
+    ratePercent: number;
+    amount: number;
+    note: string;
+  };
   owner: { role: string; name: string; whatTheyDo: string };
   unlocked: EscalationStep[];
   locked: EscalationStep[];
@@ -101,6 +113,17 @@ const AUTO_DAYS = 3;
 const MANUAL_DAYS = 10;
 /** Auto settlement ceiling after the 2026 revision. */
 const AUTO_CEILING = 500000;
+
+/**
+ * Simple interest at 12% per annum on the claim amount, for the days the claim
+ * is past the charter limit. Deliberately simple: the point is to convert an
+ * abstract entitlement into a number the member can put in a grievance, not to
+ * compute a final settlement figure. The UI says which it is.
+ */
+export function penalInterestAmount(amount: number, overdueDays: number): number {
+  if (amount <= 0 || overdueDays <= 0) return 0;
+  return Math.round((amount * 0.12 * overdueDays) / 365);
+}
 
 export function workingDaysBetween(from: Date, to: Date): number {
   let n = 0;
@@ -344,6 +367,7 @@ export function assessStatus(input: StatusInput): StatusVerdict {
     penalInterest: {
       applies: overdueBy > 0 && input.stage !== 'settled',
       ratePercent: 12,
+      amount: penalInterestAmount(input.amount, overdueBy),
       note:
         overdueBy > 0
           ? lang === 'hi'
@@ -376,8 +400,15 @@ export function delayGrievance(input: StatusInput, v: StatusVerdict, reference: 
     year: 'numeric',
   });
 
+  // Naming the figure matters more than naming the rule. A grievance that says
+  // "penal interest may apply" is filed and forgotten; one that computes the
+  // amount and asks for it to be examined has to be answered on that point.
+  const penalFigure = v.penalInterest.amount > 0
+    ? ` On the claim amount and the period of delay to date, that works out to approximately ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(v.penalInterest.amount)}, computed as simple interest at 12% per annum for ${v.overdueBy} days. I state this figure as my own calculation and request that it be verified.`
+    : '';
+
   const penalPara = v.penalInterest.applies
-    ? `\n4. I note that a delay beyond the period specified in the Citizens' Charter, without recorded justification, attracts penal interest at 12% which is recoverable from the official responsible. I request that this be examined in my case and the outcome be communicated to me in writing.\n`
+    ? `\n4. I note that a delay beyond the period specified in the Citizens' Charter, without recorded justification, attracts penal interest at 12% which is recoverable from the official responsible.${penalFigure} I request that this be examined in my case and the outcome be communicated to me in writing.\n`
     : '';
 
   return `To
