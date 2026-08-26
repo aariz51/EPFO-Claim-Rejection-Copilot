@@ -4,6 +4,7 @@ Deadline: 28 August 2026, 8:00 PM IST. No grace period.
 
 Live: **https://pf-precheck.vercel.app**
 Repo: **github.com/aariz51/EPFO-Claim-Rejection-Copilot**
+Demo video: **https://youtu.be/Ijr-enVju88** (unlisted, anyone with the link can watch)
 
 ---
 
@@ -41,7 +42,7 @@ the advice translated and not just the labels. Synthetic records throughout.
 - [x] Live public link, opens without requesting access
 - [x] Built with Codex, and powered by an OpenAI model at runtime
 - [x] Summary under 250 words
-- [ ] Video uploaded for a public URL
+- [x] Video uploaded for a public URL (1:37, https://youtu.be/Ijr-enVju88)
 - [ ] Partner's registered email, or blank if solo
 - [x] No real Aadhaar, PAN, OTP, card or payment data anywhere
 
