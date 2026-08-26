@@ -1,4 +1,3 @@
-import Link from 'next/link';
 
 /**
  * The system proposal.
@@ -163,7 +162,7 @@ export default function ProposalPage() {
       </section>
 
       <p className="spec-back">
-        <Link href="/">Back to PF Precheck</Link>
+        <a href="/">Back to PF Precheck</a>
       </p>
     </main>
   );

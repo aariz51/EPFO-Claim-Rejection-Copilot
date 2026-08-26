@@ -67,22 +67,42 @@ def speakable(text: str) -> str:
 # The script
 # --------------------------------------------------------------------------
 TAKES: dict[int, str] = {
-    1: "Last year EPFO members filed seven hundred and ninety six lakh claims. One in five was rejected. The reason you get back is two words long, and it never tells you the number you actually needed.",
+    1: "EPFO rejects about one in five claims. "
+       "The reason you get back is often two words. Insufficient service. "
+       "No number, and nothing you can actually act on.",
 
-    2: "So this asks one question first. Do you want to take money out, are you waiting on a claim that has not come, or was it rejected. Big buttons, plain words, and it reads itself aloud.",
+    2: "But EPFO already promised to settle a complete claim in twenty days. "
+       "Almost nobody is told that, and nobody is told what happens when it passes.",
 
-    3: "The same screen in Hindi, and not just the labels. The advice, the officer holding your file, the legal note, all of it. A translation into the same language the form already used would help nobody.",
+    3: "PF Precheck asks one question at a time, in large type, and reads itself aloud, "
+       "because the median member is not the person who enjoys a dashboard.",
 
-    4: "Here is the part almost nobody knows. EPFO's own citizens charter gives them twenty days. This claim is at twenty seven. From here the delay is theirs to justify, not yours to absorb.",
+    4: "This claim is on day twenty seven of a twenty day limit. Seven days past.",
 
-    5: "And past that limit an unjustified delay attracts twelve percent penal interest, recoverable from the responsible official. So the advice changes. Waiting disappears, and a grievance and an RTI unlock instead.",
+    5: "And here is the part nobody is told. Seven days past the limit, "
+       "on this claim, that delay is already worth two hundred and seventy six "
+       "rupees in penal interest, recoverable from the responsible official, "
+       "not from the department. That is the leverage.",
 
-    6: "This is where a model earns its place. Rejection remarks arrive in endless phrasings. Known ones are matched by rule, and only the rest go to the model, which returns what the rule required and what your record actually had.",
+    6: "The ladder unlocks by day, because a grievance filed on day three "
+       "is rejected as premature and burns the strongest weeks. "
+       "It names the role holding the file, and writes the grievance "
+       "with that figure already in it.",
 
-    7: "And that is the real proposal. EPFO should return this directly. A rule identifier, the required value, your actual value, and a remedy code. Not a sentence a member has to decode.",
+    7: "Every screen here was built for someone who cannot read the official form. "
+       "One question at a time, large type that scales twice without breaking, "
+       "and Hindi that covers the advice and the drafted documents, "
+       "not just the button labels.",
 
-    8: "Every record here is synthetic. It connects to no EPFO system. What it shows is the shape of an answer a member could act on, instead of two words and a closed file.",
+    8: "On the build. Known rejection reasons match a deterministic rule table, "
+       "so the same input always returns the same answer. "
+       "Only text the table does not recognise reaches an OpenAI model, "
+       "and its reply is validated into a fixed shape before anyone sees it. "
+       "The app labels which of the two answered you.",
 
+    9: "But the real fix is not this app. EPFO returns a sentence where it should "
+       "return a record. We wrote the four fields that would make this unnecessary, "
+       "and none of them need a new system. Every claim here is synthetic.",
 }
 
 

@@ -14,7 +14,7 @@ VO="$DIR/vo"
 SEG="$DIR/segments"
 WORK="$DIR/.work"
 OUT="$DIR/pf-precheck.mp4"
-TAKES=(1 2 3 4 5 6 7 8)
+TAKES=(1 2 3 4 5 6 7 8 9)
 
 dur() { ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$1"; }
 

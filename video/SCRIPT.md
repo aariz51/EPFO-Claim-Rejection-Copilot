@@ -1,47 +1,40 @@
-# PF Precheck - voiceover script
+# PF Precheck - two minute film
 
-8 takes. Each line describes exactly what is on screen while it is spoken.
-About 100 seconds, inside the two minute cap.
+Eight takes, narrated in Aariz's cloned voice, over eight screen segments
+recorded from the live deployment. Minute one is the citizen demo, minute two
+is how it was built and why.
 
-Pronunciation: **EPFO** is "E P F O". **RTI** is "R T I". **EPFiGMS** is
-"E P F i G M S".
+The leverage leads: the twenty day charter limit and what the delay is worth
+in rupees, rather than the rejection decoder.
 
-### Take 1  (~13s) - the problem
-> Last year EPFO members filed seven hundred and ninety six lakh claims. One in
-> five was rejected. The reason you get back is two words long, and it never
-> tells you the number you actually needed.
+## Take 1
 
-### Take 2  (~12s) - three doors
-> So this asks one question first. Do you want to take money out, are you
-> waiting on a claim that has not come, or was it rejected. Big buttons, plain
-> words, and it reads itself aloud.
+EPFO rejects about one in five claims. The reason you get back is often two words. Insufficient service. No number, and nothing you can actually act on.
 
-### Take 3  (~12s) - Hindi
-> The same screen in Hindi, and not just the labels. The advice, the officer
-> holding your file, the legal note, all of it. A translation into the same
-> language the form already used would help nobody.
+## Take 2
 
-### Take 4  (~14s) - the accountability clock
-> Here is the part almost nobody knows. EPFO's own citizens charter gives them
-> twenty days. This claim is at twenty seven. From here the delay is theirs to
-> justify, not yours to absorb.
+But EPFO already promised to settle a complete claim in twenty days. Almost nobody is told that, and nobody is told what happens when it passes.
 
-### Take 5  (~13s) - penal interest and the ladder
-> And past that limit an unjustified delay attracts twelve percent penal
-> interest, recoverable from the responsible official. So the advice changes.
-> Waiting disappears, and a grievance and an R T I unlock instead.
+## Take 3
 
-### Take 6  (~13s) - the decoder
-> This is where a model earns its place. Rejection remarks arrive in endless
-> phrasings. Known ones are matched by rule, and only the rest go to the model,
-> which returns what the rule required and what your record actually had.
+PF Precheck asks one question at a time, in large type, and reads itself aloud, because the median member is not the person who enjoys a dashboard.
 
-### Take 7  (~12s) - the contract
-> And that is the real proposal. EPFO should return this directly. A rule
-> identifier, the required value, your actual value, and a remedy code. Not a
-> sentence a member has to decode.
+## Take 4
 
-### Take 8  (~12s) - honesty
-> Every record here is synthetic. It connects to no EPFO system. What it shows
-> is the shape of an answer a member could act on, instead of two words and a
-> closed file.
+This claim is on day twenty seven of a twenty day limit. Seven days past.
+
+## Take 5
+
+And here is the part nobody is told. That delay is worth one thousand one hundred and eighty four rupees in penal interest, recoverable from the responsible official, not from the department.
+
+## Take 6
+
+The ladder unlocks by day, because a grievance filed on day three is rejected as premature. It names the role holding the file, and writes the grievance with that figure already in it.
+
+## Take 7
+
+All of it works in Hindi, including the advice and the drafted documents, not just the labels.
+
+## Take 8
+
+Known rejection reasons match a rule table, so the answer never varies. Only text the table does not recognise reaches an OpenAI model, and its reply is validated into a fixed shape first. Every claim here is synthetic.

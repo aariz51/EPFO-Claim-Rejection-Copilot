@@ -75,107 +75,110 @@ async function toVerdict(page, hindi = false) {
 }
 
 const BEATS = {
-  // "796 lakh claims, one in five rejected, two words back"
+  // "one in five rejected, two words back"
   1: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    await sleep(3200);                 // the three big choices
-    await glide(page, 200, 2600);
-    await sleep(secs * 1000 - 5800);
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    await sleep(3600);                 // the landing, the specimen card
+    await glide(page, 240, 2800);
+    await sleep(secs * 1000 - 6400);
   },
 
-  // "one question first ... big buttons, plain words, reads itself aloud"
+  // "EPFO already promised twenty days. nobody is told."
   2: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    await sleep(900);
+    await page.evaluate(() => {
+      document.querySelector('.lp-facts')?.scrollIntoView({ block: 'center' });
+    });
+    await sleep(3200);                 // 20 days / 12% / 1 in 5
+    await glide(page, 1500, 2800);
+    await sleep(secs * 1000 - 6900);
+  },
+
+  // "one question at a time, large type, reads itself aloud"
+  3: async (page, secs) => {
+    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
     await sleep(2200);
-    // show the assist controls doing something real
     await page.getByRole('button', { name: /Bigger text/ }).click();
     await sleep(1900);
     await page.getByRole('button', { name: /Bigger text/ }).click();
     await sleep(secs * 1000 - 6100);
   },
 
-  // "the same screen in Hindi, and not just the labels"
-  3: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    await sleep(900);
-    await page.getByRole('button', { name: 'हिंदी' }).click();
-    await sleep(2400);                 // hold on the Hindi home
-    await toVerdict(page, true);       // then Hindi advice, not just labels
-    await glide(page, 520, 2400);
-    await sleep(secs * 1000 - 9500);
-  },
-
-  // "their own charter gives them 20 days. this claim is at 27."
+  // "day twenty seven of a twenty day limit"
   4: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
     await sleep(700);
     await toVerdict(page);
-    await sleep(secs * 1000 - 5000);   // sit on the number and the 20 day marker
-  },
-
-  // "12% penal interest ... waiting disappears, grievance and RTI unlock"
-  5: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    await sleep(600);
-    await toVerdict(page);
-    await glide(page, 620, 2200);      // the penal card
-    await sleep(2200);
-    await glide(page, 1150, 2600);     // the ladder
-    await sleep(secs * 1000 - 9200);
-  },
-
-  // "known ones matched by rule, only the rest go to the model"
-  6: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    await sleep(800);
-    await page.getByRole('button', { name: /My claim was rejected/ }).click();
-    await sleep(900);
-    await page.locator('.simple-textarea').fill(
-      'Your claim stands rejected as the wage details furnished by the establishment for 04/2019 to 11/2021 do not tally with the ECR filed, kindly get the same rectified by employer and resubmit.'
-    );
-    await sleep(800);
-    await page.getByRole('button', { name: /Explain this to me/ }).click();
-    await page.waitForSelector('.decode-card', { timeout: 40000 }).catch(() => {});
-    await sleep(1200);
-    await page.evaluate(() => document.querySelector('.decode-gap')?.scrollIntoView({ block: 'center' }));
-    await sleep(3000);                 // required vs actual, side by side
-  },
-
-  // "EPFO should return this directly: rule_id, required, actual, remedy"
-  7: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    await sleep(600);
-    await page.getByRole('button', { name: /My claim was rejected/ }).click();
-    await sleep(700);
-    await page.locator('.simple-textarea').fill(
-      'Rejected: the establishment has not remitted contributions for 06/2023 to 09/2023, kindly contact employer.'
-    );
-    await sleep(500);
-    await page.getByRole('button', { name: /Explain this to me/ }).click();
-    await page.waitForSelector('.decode-card', { timeout: 40000 }).catch(() => {});
-    await sleep(900);
-    // open the proposed backend contract, which is the argument of the project
-    await page.evaluate(() => {
-      const d = document.querySelector('.decode-contract');
-      if (d) { d.open = true; d.scrollIntoView({ block: 'center' }); }
-    });
     await sleep(secs * 1000 - 5000);
   },
 
-  // "every record here is synthetic ... the shape of an answer"
+  // "worth one thousand one hundred and eighty four rupees"
+  5: async (page, secs) => {
+    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
+    await sleep(600);
+    await toVerdict(page);
+    await page.evaluate(() => {
+      document.querySelector('.penal-card')?.scrollIntoView({ block: 'center' });
+    });
+    await sleep(secs * 1000 - 4600);   // sit on the rupee figure
+  },
+
+  // "the ladder unlocks by day. names the role. writes the grievance."
+  6: async (page, secs) => {
+    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
+    await sleep(600);
+    await toVerdict(page);
+    await glide(page, 620, 2200);      // the owner card
+    await sleep(1800);
+    await glide(page, 1250, 2600);     // the ladder
+    await sleep(secs * 1000 - 8800);
+  },
+
+  // "built for someone who cannot read the form: scale, then Hindi advice"
+  7: async (page, secs) => {
+    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
+    await sleep(900);
+    await page.getByRole('button', { name: /Bigger text/ }).click();
+    await sleep(1500);
+    await page.getByRole('button', { name: 'हिंदी' }).click();
+    await sleep(2000);
+    await toVerdict(page, true);
+    await glide(page, 520, 2200);
+    await sleep(secs * 1000 - 9600);
+  },
+
+  // "rule table first, model only on the rest, labelled either way"
   8: async (page, secs) => {
-    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/app`, { waitUntil: 'networkidle' });
+    await sleep(700);
+    await page.getByRole('button', { name: /My claim was rejected/ }).click();
+    await sleep(800);
+    await page.locator('.simple-textarea').fill(
+      'Your claim stands rejected as the wage details furnished by the establishment for 04/2019 to 11/2021 do not tally with the ECR filed, kindly get the same rectified by employer and resubmit.'
+    );
+    await sleep(700);
+    await page.getByRole('button', { name: /Explain this to me/ }).click();
+    await page.waitForSelector('.decode-card', { timeout: 40000 }).catch(() => {});
     await sleep(1000);
-    await page.getByRole('button', { name: /Detailed view/ }).click();
-    await sleep(2600);                 // the full workspace
-    await glide(page, 460, 2800);
-    await sleep(secs * 1000 - 7400);
+    await page.evaluate(() => document.querySelector('.decode-gap')?.scrollIntoView({ block: 'center' }));
+    await sleep(secs * 1000 - 6000);
+  },
+
+  // "the real fix is not this app. four fields."
+  9: async (page, secs) => {
+    await page.goto(`${BASE}/proposal`, { waitUntil: 'networkidle' });
+    await sleep(2600);
+    await glide(page, 760, 3000);
+    await sleep(1600);
+    await glide(page, 1700, 2800);
+    await sleep(secs * 1000 - 10600);
   },
 };
 
 async function main() {
   const wanted = process.argv.slice(2).map(Number).filter(Boolean);
-  const list = wanted.length ? wanted : [1, 2, 3, 4, 5, 6, 7, 8];
+  const list = wanted.length ? wanted : [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   mkdirSync(SEGMENTS, { recursive: true });
   rmSync(RAW, { recursive: true, force: true });
