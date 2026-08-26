@@ -92,7 +92,7 @@ export default function Landing() {
           </a>
         </div>
         <p className="lp-chips">
-          <span>NO SIGN-UP</span>
+          <span>NO UAN, NO OTP, NO LOGIN</span>
           <span>ENGLISH + हिंदी</span>
           <span>READS ALOUD</span>
           <span>SYNTHETIC DATA</span>

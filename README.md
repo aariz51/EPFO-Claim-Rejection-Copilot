@@ -1,10 +1,68 @@
 # PF Precheck
 
-PF Precheck is an independent hackathon prototype covering the whole EPF claim
-lifecycle: before you file, while you wait, and after a rejection. It turns opaque
-rules, fragmented records and unexplained delay into exact numbers with a named
-owner, then carries the same diagnosis into decoded rejections and evidence-backed
-grievance drafts.
+**Live: https://pf-precheck.vercel.app** — opens straight into the product.
+**No UAN. No OTP. No login. No demo credentials to type.** The journey starts on the
+first screen you land on.
+
+Built for **Build What Moves India**. Independent prototype, not affiliated with or
+endorsed by EPFO. All claim data is synthetic.
+
+---
+
+## The member is not short of information. They are short of leverage.
+
+Every other tool in this space helps a member *avoid* a rejection. That matters, and
+this does it too. But it leaves untouched the thing that actually grinds people down:
+the claim that is simply sitting there, with nobody accountable and nothing to point
+at.
+
+EPFO already promised to settle a complete claim in **twenty days**, in its own
+Citizens' Charter. An unjustified delay past that already attracts **12% penal
+interest, recoverable from the responsible official** rather than from the
+department. Almost no member is ever told either fact.
+
+PF Precheck counts your claim against that limit, names the role holding your file,
+computes what the delay is worth **to you, in rupees**, and writes the grievance that
+says so.
+
+---
+
+## What to try, in about 60 seconds
+
+Reviewer path. Nothing to log into.
+
+1. Open **https://pf-precheck.vercel.app** and click **Open PF Precheck**
+2. Choose **"I applied, money has not come"**
+3. **About a month ago** → **Submitted at portal**
+4. The verdict: **day 27 of a 20-day limit, 7 days late**, and the role holding the
+   file — a Dealing Assistant in the field office claims section, not "EPFO"
+5. **What this delay is worth, on your claim: ₹276.** 12% a year on a ₹1,20,000 claim
+   for 7 days, recoverable from the responsible official
+6. Scroll to **What to do now** — EPFiGMS and RTI are open; CPGRAMS is visibly locked
+   until day 45, because filing early gets it rejected as premature
+7. **Draft the grievance** — the rupee figure is already in the letter, stated as the
+   member's own calculation with a request that it be verified
+8. Toggle **हिंदी** — the advice and the drafted documents change, not only the labels
+9. Press **बड़े अक्षर / Bigger text** twice — nothing breaks
+10. Then **/proposal** — what EPFO should return instead of a sentence
+
+---
+
+## Why the accessibility work is not decoration
+
+The median EPF member is not the person who enjoys a dashboard. So the default view
+asks one question at a time in large type, reads itself aloud, and scales twice
+without breaking the layout.
+
+Hindi is complete — advice, verdicts and generated documents, not only button
+labels — and it is written in plain spoken Hindi rather than the Sanskritised
+register the official forms use. A translation in the same register does not help
+someone who could not read the original.
+
+And there is no login. A member who cannot get past a UAN and an OTP never reaches
+any of it.
+
+---
 
 **Three things a member can be stuck on, and this answers all three.**
 
