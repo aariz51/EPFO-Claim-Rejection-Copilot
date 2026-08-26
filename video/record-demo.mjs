@@ -1,0 +1,242 @@
+/**
+ * Record the PF Precheck demo with a standalone Playwright browser.
+ *
+ *   node video/record-demo.mjs         all segments
+ *   node video/record-demo.mjs 4 6     only 4 and 6
+ *
+ * Its own Chromium plus Playwright's built-in video capture: no extension is
+ * attached, so the "started debugging this browser" banner cannot appear, and
+ * nothing else on the desktop can reach a frame.
+ *
+ * Recorded against the live deployment, so what is filmed is what a reviewer
+ * will actually open.
+ */
+
+import { chromium } from 'playwright';
+import { execSync } from 'node:child_process';
+import { existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const SEGMENTS = join(HERE, 'segments');
+const RAW = join(HERE, '.rawvideo');
+const VO = join(HERE, 'vo');
+const BASE = process.env.BASE ?? 'https://pf-precheck.vercel.app';
+
+const W = 1920;
+const H = 1080;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function takeLength(n) {
+  const f = join(VO, `take${n}.wav`);
+  if (!existsSync(f)) throw new Error(`missing narration: take${n}.wav`);
+  return parseFloat(
+    execSync(`ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${f}"`).toString().trim()
+  );
+}
+
+/** Preference state, so a segment opens in the language and mode it needs. */
+function prefs({ lang = 'en', mode = 'simple', scale = 'normal' } = {}) {
+  return JSON.stringify({ lang, mode, scale, speak: false, assisted: false });
+}
+
+async function glide(page, to, ms) {
+  await page.evaluate(
+    ([to, ms]) =>
+      new Promise((done) => {
+        const from = window.scrollY;
+        const t0 = performance.now();
+        const ease = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+        function step(now) {
+          const k = Math.min(1, (now - t0) / ms);
+          window.scrollTo(0, from + (to - from) * ease(k));
+          if (k < 1) requestAnimationFrame(step);
+          else done();
+        }
+        requestAnimationFrame(step);
+      }),
+    [to, ms]
+  );
+}
+
+/** Walk the waiting journey to the verdict. */
+async function toVerdict(page, hindi = false) {
+  const L = hindi
+    ? [/मैंने आवेदन किया/, /लगभग एक महीने पहले/, /पोर्टल पर जमा है/]
+    : [/I applied, money has not come/, /About a month ago/, /Submitted at portal/];
+  await page.getByRole('button', { name: L[0] }).click();
+  await sleep(700);
+  await page.getByRole('button', { name: L[1] }).click();
+  await sleep(600);
+  await page.getByRole('button', { name: L[2] }).click();
+  await sleep(1400);
+}
+
+const BEATS = {
+  // "796 lakh claims, one in five rejected, two words back"
+  1: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(3200);                 // the three big choices
+    await glide(page, 200, 2600);
+    await sleep(secs * 1000 - 5800);
+  },
+
+  // "one question first ... big buttons, plain words, reads itself aloud"
+  2: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(2200);
+    // show the assist controls doing something real
+    await page.getByRole('button', { name: /Bigger text/ }).click();
+    await sleep(1900);
+    await page.getByRole('button', { name: /Bigger text/ }).click();
+    await sleep(secs * 1000 - 6100);
+  },
+
+  // "the same screen in Hindi, and not just the labels"
+  3: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(900);
+    await page.getByRole('button', { name: 'हिंदी' }).click();
+    await sleep(2400);                 // hold on the Hindi home
+    await toVerdict(page, true);       // then Hindi advice, not just labels
+    await glide(page, 520, 2400);
+    await sleep(secs * 1000 - 9500);
+  },
+
+  // "their own charter gives them 20 days. this claim is at 27."
+  4: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(700);
+    await toVerdict(page);
+    await sleep(secs * 1000 - 5000);   // sit on the number and the 20 day marker
+  },
+
+  // "12% penal interest ... waiting disappears, grievance and RTI unlock"
+  5: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(600);
+    await toVerdict(page);
+    await glide(page, 620, 2200);      // the penal card
+    await sleep(2200);
+    await glide(page, 1150, 2600);     // the ladder
+    await sleep(secs * 1000 - 9200);
+  },
+
+  // "known ones matched by rule, only the rest go to the model"
+  6: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(800);
+    await page.getByRole('button', { name: /My claim was rejected/ }).click();
+    await sleep(900);
+    await page.locator('.simple-textarea').fill(
+      'Your claim stands rejected as the wage details furnished by the establishment for 04/2019 to 11/2021 do not tally with the ECR filed, kindly get the same rectified by employer and resubmit.'
+    );
+    await sleep(800);
+    await page.getByRole('button', { name: /Explain this to me/ }).click();
+    await page.waitForSelector('.decode-card', { timeout: 40000 }).catch(() => {});
+    await sleep(1200);
+    await page.evaluate(() => document.querySelector('.decode-gap')?.scrollIntoView({ block: 'center' }));
+    await sleep(3000);                 // required vs actual, side by side
+  },
+
+  // "EPFO should return this directly: rule_id, required, actual, remedy"
+  7: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(600);
+    await page.getByRole('button', { name: /My claim was rejected/ }).click();
+    await sleep(700);
+    await page.locator('.simple-textarea').fill(
+      'Rejected: the establishment has not remitted contributions for 06/2023 to 09/2023, kindly contact employer.'
+    );
+    await sleep(500);
+    await page.getByRole('button', { name: /Explain this to me/ }).click();
+    await page.waitForSelector('.decode-card', { timeout: 40000 }).catch(() => {});
+    await sleep(900);
+    // open the proposed backend contract, which is the argument of the project
+    await page.evaluate(() => {
+      const d = document.querySelector('.decode-contract');
+      if (d) { d.open = true; d.scrollIntoView({ block: 'center' }); }
+    });
+    await sleep(secs * 1000 - 5000);
+  },
+
+  // "every record here is synthetic ... the shape of an answer"
+  8: async (page, secs) => {
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    await sleep(1000);
+    await page.getByRole('button', { name: /Detailed view/ }).click();
+    await sleep(2600);                 // the full workspace
+    await glide(page, 460, 2800);
+    await sleep(secs * 1000 - 7400);
+  },
+};
+
+async function main() {
+  const wanted = process.argv.slice(2).map(Number).filter(Boolean);
+  const list = wanted.length ? wanted : [1, 2, 3, 4, 5, 6, 7, 8];
+
+  mkdirSync(SEGMENTS, { recursive: true });
+  rmSync(RAW, { recursive: true, force: true });
+  mkdirSync(RAW, { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+
+  for (const n of list) {
+    const secs = takeLength(n);
+    const dir = join(RAW, `s${n}`);
+    mkdirSync(dir, { recursive: true });
+
+    const ctx = await browser.newContext({
+      viewport: { width: W, height: H },
+      deviceScaleFactor: 1,
+      recordVideo: { dir, size: { width: W, height: H } },
+      storageState: {
+        cookies: [],
+        origins: [
+          {
+            origin: BASE,
+            localStorage: [
+              { name: 'pf-assist-prefs', value: prefs({ mode: n === 8 ? 'detailed' : 'simple' }) },
+              { name: 'gh-banner', value: 'hidden' },
+            ],
+          },
+        ],
+      },
+    });
+
+    const page = await ctx.newPage();
+    await page.addStyleTag({ content: '*{caret-color:transparent!important}' }).catch(() => {});
+
+    const t0 = Date.now();
+    try {
+      await BEATS[n](page, secs);
+    } catch (e) {
+      console.log(`  segment ${n}: beat error -> ${e.message}`);
+    }
+    const held = (Date.now() - t0) / 1000;
+    if (held < secs + 0.4) await sleep((secs + 0.4 - held) * 1000);
+
+    await ctx.close();
+    const webm = readdirSync(dir).find((f) => f.endsWith('.webm'));
+    if (!webm) { console.log(`  segment ${n}: NO VIDEO PRODUCED`); continue; }
+
+    const out = join(SEGMENTS, `seg${n}.mp4`);
+    execSync(
+      `ffmpeg -hide_banner -loglevel error -y -i "${join(dir, webm)}" ` +
+        `-vf "scale=${W}:${H},setsar=1,format=yuv420p" -r 30 ` +
+        `-c:v libx264 -preset veryfast -crf 20 -movflags +faststart "${out}"`
+    );
+    const dur = execSync(
+      `ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${out}"`
+    ).toString().trim();
+    console.log(`  seg${n}.mp4  ${parseFloat(dur).toFixed(1)}s   (narration ${secs.toFixed(1)}s)`);
+  }
+
+  await browser.close();
+  rmSync(RAW, { recursive: true, force: true });
+  console.log('done');
+}
+
+main().catch((e) => { console.error(e); process.exit(1); });

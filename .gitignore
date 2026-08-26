@@ -40,3 +40,11 @@ next-env.d.ts
 
 # vercel build output
 .vercel
+
+# video working files
+video/segments/
+video/vo/
+video/.rawvideo/
+video/*.wav
+video/node_modules
+video/.work/
