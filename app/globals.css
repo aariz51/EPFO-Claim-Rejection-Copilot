@@ -505,3 +505,13 @@ button { cursor: pointer; }
 :root[data-contrast='high'] .simple-primary { background: #000; color: #fff; border: 2px solid #000; }
 :root[data-contrast='high'] .assist-chip.on { background: #000; color: #fff; }
 :root[data-contrast='high'] :focus-visible { outline: 4px solid #000; outline-offset: 3px; }
+/* the model table on /proposal */
+.spec-modeltable { margin-top: 18px; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.spec-modelrow { background: var(--surface); padding: 18px 20px; display: grid; gap: 12px; }
+@media (min-width: 900px) { .spec-modelrow { grid-template-columns: 15rem 1fr 9rem; gap: 22px; align-items: start; } }
+.spec-model-job { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.45; }
+.spec-model-name { margin: 8px 0 0; font-family: var(--font-geist-mono), monospace; font-size: 12.5px; color: var(--accent); }
+.spec-pill { display: block; width: fit-content; margin-top: 7px; padding: 3px 8px; border-radius: 999px; background: #eef2f5; color: #5a6672; font-family: var(--font-atkinson), sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.spec-pill.live { background: var(--success-soft); color: #0d5f47; }
+.spec-model-cost { margin: 0; font-family: var(--font-geist-mono), monospace; font-size: 12.5px; line-height: 1.6; color: var(--muted-ink); }
+.spec-model-note { color: var(--muted-ink); font-size: 13.5px; }

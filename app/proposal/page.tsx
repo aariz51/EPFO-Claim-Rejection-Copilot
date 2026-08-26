@@ -16,6 +16,41 @@ export const metadata = {
     'The four changes that would make this product unnecessary, written as a spec rather than a pitch.',
 };
 
+const MODEL_ROLES = [
+  {
+    job: 'Decoding a rejection remark the rule table does not recognise',
+    model: 'gpt-4.1-mini',
+    live: true,
+    today:
+      'Live in the product now. Known phrasings never reach it, so the common answers never vary. What does reach it comes back validated into a fixed schema before a member sees it, and the screen says which of the two answered you.',
+    cost: 'about 10 paise per decode',
+  },
+  {
+    job: 'Understanding what the member said, instead of making them choose',
+    model: 'gpt-4o-transcribe',
+    live: false,
+    today:
+      '"Paisa nahi aaya, do mahine ho gaye" should resolve to the waiting journey with a filing date already set. Code-mixed Hinglish is the normal case for this audience, not the edge case, and a menu of buttons cannot survive it.',
+    cost: 'about 25 paise per claim',
+  },
+  {
+    job: 'Reading the verdict and the grievance aloud',
+    model: 'gpt-4o-mini-tts',
+    live: false,
+    today:
+      'The browser speech engine ships because it is free and works offline. On the cheap Android handsets that matter most here it reads Devanagari with a Latin voice, and for a member who cannot read the explanation that is the difference between the product working and not.',
+    cost: 'about 2 rupees per verdict',
+  },
+  {
+    job: 'The advice and the drafted documents in more Indian languages',
+    model: 'gpt-5-mini, generated once at build time',
+    live: false,
+    today:
+      'English and Hindi are complete, including the advice and the generated grievance. Six further languages are named as pending rather than shipped unverified: a confidently wrong sentence in a legal document is worse than no sentence, and we cannot read Tamil or Kannada well enough to check one. Generated at build time, runtime cost is zero and it cannot fail on a bad connection.',
+    cost: 'single digit rupees, once',
+  },
+];
+
 const CHANGES = [
   {
     n: '01',
@@ -144,6 +179,37 @@ export default function ProposalPage() {
             <li key={n}>{n}</li>
           ))}
         </ul>
+      </section>
+
+      <section className="spec-box">
+        <h2 className="spec-h2">What the OpenAI model does today, and what it would raise</h2>
+        <p className="spec-p">
+          One model is load-bearing in this product right now. Three more would each remove
+          a real limitation, and it is more useful to name them with their cost than to
+          pretend the prototype has no ceiling.
+        </p>
+        <div className="spec-modeltable">
+          {MODEL_ROLES.map((r) => (
+            <div key={r.job} className="spec-modelrow">
+              <div>
+                <p className="spec-model-job">{r.job}</p>
+                <p className="spec-model-name">
+                  {r.model}
+                  <span className={r.live ? 'spec-pill live' : 'spec-pill'}>
+                    {r.live ? 'live now' : 'would raise the ceiling'}
+                  </span>
+                </p>
+              </div>
+              <p className="spec-p">{r.today}</p>
+              <p className="spec-model-cost">{r.cost}</p>
+            </div>
+          ))}
+        </div>
+        <p className="spec-p spec-model-note">
+          Costs are order-of-magnitude estimates from published token pricing, not measured
+          invoices. They are here because a proposal that ignores what it costs to run is not
+          a proposal.
+        </p>
       </section>
 
       <section className="spec-box spec-box-quiet">
