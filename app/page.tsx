@@ -36,10 +36,24 @@ const SITUATIONS = [
   },
 ];
 
+/* Every figure here carries where it came from. A product whose whole argument is
+   that EPFO should return checkable numbers cannot itself state uncheckable ones. */
 const FACTS = [
-  { n: '20 days', l: "EPFO's own Citizens' Charter limit for settling a complete claim" },
-  { n: '12%', l: 'penal interest on unjustified delay, recoverable from the responsible official' },
-  { n: '1 in 5', l: 'claims rejected, often with a two word reason and no number attached' },
+  {
+    n: '20 days',
+    l: "EPFO's own Citizens' Charter limit for settling a complete claim",
+    src: "EPFO Citizens' / Clients' Charter",
+  },
+  {
+    n: '12%',
+    l: 'penal interest on unjustified delay, recoverable from the responsible official rather than from the department',
+    src: 'EPFO claim settlement norms',
+  },
+  {
+    n: '1 in 3',
+    l: 'final settlement claims rejected. Across all claim types it is closer to one in four, and the reason is usually two words with no number attached',
+    src: 'Reported EPFO claim data, 2023-24',
+  },
 ];
 
 export default function Landing() {
@@ -146,6 +160,7 @@ export default function Landing() {
           <div key={f.n} className="lp-fact">
             <p className="lp-fact-n">{f.n}</p>
             <p className="lp-fact-l">{f.l}</p>
+            <p className="lp-fact-src">{f.src}</p>
           </div>
         ))}
       </section>

@@ -543,3 +543,5 @@ button { cursor: pointer; }
 .simple-secondary { margin-top: 22px; min-height: 54px; padding: 0 22px; border-radius: 10px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font-size: calc(17px * var(--scale)); font-weight: 700; display: inline-flex; align-items: center; gap: 10px; }
 :root[data-contrast='high'] .prefile-checks .chk { border-width: 2px; border-color: #000; background: #fff; }
 :root[data-contrast='high'] .chk-nums, :root[data-contrast='high'] .chk-remedy, :root[data-contrast='high'] .chk-rule { color: #000; }
+.lp-fact-src { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.5; color: var(--muted-ink); }
+:root[data-contrast='high'] .lp-fact-src { color: #000; border-top-color: #000; }
