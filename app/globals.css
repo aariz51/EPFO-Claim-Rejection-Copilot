@@ -545,3 +545,10 @@ button { cursor: pointer; }
 :root[data-contrast='high'] .chk-nums, :root[data-contrast='high'] .chk-remedy, :root[data-contrast='high'] .chk-rule { color: #000; }
 .lp-fact-src { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.5; color: var(--muted-ink); }
 :root[data-contrast='high'] .lp-fact-src { color: #000; border-top-color: #000; }
+/* The red herring. Deliberately styled as advice, not as an error: it is telling
+   you what NOT to do, which is the opposite of every other box on the page. */
+.red-herring { margin: 18px 0 0; padding: 16px 18px; border-radius: 12px; border: 2px dashed #9aa7b4; background: #f7f9fb; }
+.rh-head { margin: 0; font-size: calc(16px * var(--scale)); font-weight: 700; color: #3d4b58; }
+.rh-body { margin: 7px 0 0; font-size: calc(15px * var(--scale)); line-height: 1.55; color: #4a5866; }
+:root[data-contrast='high'] .red-herring { border-color: #000; background: #fff; }
+:root[data-contrast='high'] .rh-head, :root[data-contrast='high'] .rh-body { color: #000; }

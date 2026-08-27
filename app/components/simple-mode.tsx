@@ -271,6 +271,13 @@ export function SimpleMode({
           {t('max_eligible', lang)}: <strong>{formatCurrency(report.maximumEligibleAmount)}</strong>
         </p>
 
+        {report.notTheBlocker ? (
+          <div className="red-herring">
+            <p className="rh-head">{t('not_blocker', lang)}: {report.notTheBlocker.label}</p>
+            <p className="rh-body">{report.notTheBlocker.why}</p>
+          </div>
+        ) : null}
+
         <ol className="prefile-checks">
           {report.checks.map((c) => (
             <li key={c.id} className={c.status === 'pass' ? 'chk pass' : 'chk fail'}>
@@ -285,7 +292,9 @@ export function SimpleMode({
                 {c.status !== 'pass' && c.remedy ? (
                   <p className="chk-remedy"><strong>{t('fix_this', lang)}: </strong>{c.remedy}</p>
                 ) : null}
-                <p className="chk-rule">{c.ruleId}</p>
+                <p className="chk-rule">
+                  {c.ruleId} · {t('rule_version', lang)} {c.ruleVersion} · {c.effectiveFrom}
+                </p>
               </div>
             </li>
           ))}

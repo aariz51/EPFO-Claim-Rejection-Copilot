@@ -152,6 +152,9 @@ export const T: Dict = {
   fix_this: { en: 'Fix this first', hi: 'पहले यह ठीक कीजिए' },
   max_eligible: { en: 'Most you can claim right now', hi: 'अभी आप ज़्यादा से ज़्यादा इतना ले सकते हैं' },
 
+  not_blocker: { en: 'Do not waste time on this', hi: 'इस पर समय बर्बाद मत कीजिए' },
+  rule_version: { en: 'Rule version', hi: 'नियम संस्करण' },
+
   contrastOn: { en: 'High contrast', hi: 'गहरा कंट्रास्ट' },
   contrastOff: { en: 'Normal contrast', hi: 'सामान्य कंट्रास्ट' },
 

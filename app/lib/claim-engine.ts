@@ -29,6 +29,15 @@ export interface ClaimCheck {
   remedy?: string;
   owner?: string;
   ruleId: string;
+  /**
+   * Which version of the rule produced this answer.
+   *
+   * A rule that changes silently is a rule a member cannot argue with. Stamping
+   * the version and the date it took effect means the same claim re-checked next
+   * year either gives the same answer or tells you which rule moved.
+   */
+  ruleVersion: string;
+  effectiveFrom: string;
 }
 
 export interface ClaimReport {
@@ -42,6 +51,14 @@ export interface ClaimReport {
   maximumEligibleAmount: number;
   checks: ClaimCheck[];
   alternatives: Array<{ title: string; detail: string; action: string }>;
+  /**
+   * The thing that looks alarming and is not the blocker.
+   *
+   * Members burn weeks chasing the wrong field, usually a name spelling, because
+   * it is the visible difference. Saying plainly what NOT to fix is worth as much
+   * as saying what to fix, and almost nothing tells them.
+   */
+  notTheBlocker: { label: string; why: string } | null;
 }
 
 export interface DecodedRejection {
@@ -79,6 +96,13 @@ const purposeRules: Record<Form31Purpose, { label: string; months: number; multi
   education: { label: 'Post-matric education', months: 84, employeeShareRatio: 0.5, ruleId: 'EPF-2026-68K-EDUCATION' },
 };
 
+/**
+ * The rule table's own version. Bump this whenever a threshold changes, and the
+ * date with it, so a member can tell a stale answer from a current one.
+ */
+export const RULE_SET_VERSION = 'v2026.08.3';
+export const RULE_SET_EFFECTIVE = '2026-08-01';
+
 export const formatMonths = (months: number) => {
   const years = Math.floor(months / 12);
   const remainder = months % 12;
@@ -103,6 +127,8 @@ function amountCheck(requestedAmount: number, maximum: number, ruleId: string): 
     remedy: difference > 0 ? 'Reduce the claim to ' + formatCurrency(maximum) + ' or less.' : undefined,
     owner: difference > 0 ? 'Member' : undefined,
     ruleId,
+    ruleVersion: RULE_SET_VERSION,
+    effectiveFrom: RULE_SET_EFFECTIVE,
   };
 }
 
@@ -118,6 +144,8 @@ function commonChecks(record: MemberRecord): ClaimCheck[] {
       remedy: record.kycVerified ? undefined : 'Submit a Joint Declaration correction before filing.',
       owner: record.kycVerified ? undefined : 'Member + employer',
       ruleId: 'UAN-KYC-IDENTITY',
+      ruleVersion: RULE_SET_VERSION,
+      effectiveFrom: RULE_SET_EFFECTIVE,
     },
     {
       id: 'bank',
@@ -129,6 +157,8 @@ function commonChecks(record: MemberRecord): ClaimCheck[] {
       remedy: record.bankVerified ? undefined : 'Seed and verify an active bank account before filing.',
       owner: record.bankVerified ? undefined : 'Member + bank/employer',
       ruleId: 'UAN-BANK-VALIDATION',
+      ruleVersion: RULE_SET_VERSION,
+      effectiveFrom: RULE_SET_EFFECTIVE,
     },
   ];
 }
@@ -165,6 +195,8 @@ export function evaluateClaim(record: MemberRecord, claimType: ClaimType, purpos
       remedy: serviceGap > 0 ? 'Correct the missing pensionable service before submitting this purpose.' : undefined,
       owner: serviceGap > 0 ? 'EPFO field office' : undefined,
       ruleId: rule.ruleId,
+      ruleVersion: RULE_SET_VERSION,
+      effectiveFrom: RULE_SET_EFFECTIVE,
     });
 
     if (record.missingServiceMonths > 0) {
@@ -179,6 +211,8 @@ export function evaluateClaim(record: MemberRecord, claimType: ClaimType, purpos
         remedy: 'Attach Annexure K, both passbooks and the service-history screenshot to an EPFiGMS grievance.',
         owner: 'Transferor EPFO field office',
         ruleId: 'RECORD-SYNC-ANNEXURE-K',
+        ruleVersion: RULE_SET_VERSION,
+        effectiveFrom: RULE_SET_EFFECTIVE,
       });
     }
 
@@ -213,6 +247,8 @@ export function evaluateClaim(record: MemberRecord, claimType: ClaimType, purpos
       remedy: 'Use an eligible advance purpose while employed, or wait until the final-settlement condition is met.',
       owner: 'Member / employer',
       ruleId: 'EPF-2026-PROLONGED-EXIT',
+      ruleVersion: RULE_SET_VERSION,
+      effectiveFrom: RULE_SET_EFFECTIVE,
     });
     checks.push(amountCheck(requestedAmount, maximumEligibleAmount, 'EPF-2026-FINAL-SETTLEMENT'));
     alternatives.push({ title: 'Use Form 31 for a genuine immediate need', detail: 'Advances remain purpose-specific while employment is active.', action: 'Compare eligible advance purposes.' });
@@ -234,6 +270,8 @@ export function evaluateClaim(record: MemberRecord, claimType: ClaimType, purpos
         remedy: serviceEligible ? undefined : 'Choose a scheme certificate instead of withdrawal benefit.',
         owner: serviceEligible ? undefined : 'Member',
         ruleId: 'EPS-2026-SERVICE-BAND',
+        ruleVersion: RULE_SET_VERSION,
+        effectiveFrom: RULE_SET_EFFECTIVE,
       },
       {
         id: 'eps-exit',
@@ -246,10 +284,27 @@ export function evaluateClaim(record: MemberRecord, claimType: ClaimType, purpos
         remedy: 'Preserve the EPS service and revisit the withdrawal or scheme-certificate route after exit.',
         owner: 'Member / employer',
         ruleId: 'EPS-2026-PROLONGED-EXIT',
+        ruleVersion: RULE_SET_VERSION,
+        effectiveFrom: RULE_SET_EFFECTIVE,
       },
     );
     alternatives.push({ title: 'Preserve service with a scheme certificate', detail: 'This keeps pensionable service available for future employment or pension eligibility.', action: 'Review the scheme-certificate path.' });
   }
+
+  /* The red herring. If something is visibly different but is NOT blocking, say
+     so by name. Members chase the name spelling for weeks because it is the
+     difference they can see, while the real blocker sits in service history. */
+  const realBlocker = checks.find((c) => c.status === 'blocker');
+  const looksBadButIsFine = checks.find(
+    (c) => c.status !== 'blocker' && /identity|kyc|name|bank/i.test(c.label),
+  );
+  const notTheBlocker =
+    realBlocker && looksBadButIsFine
+      ? {
+          label: looksBadButIsFine.label,
+          why: `This one passes. It is the difference people notice first and chase for weeks, but it is not what stops this claim. Fix "${realBlocker.label}" instead.`,
+        }
+      : null;
 
   const blockers = checks.filter((check) => check.status === 'blocker').length;
   const warnings = checks.filter((check) => check.status === 'warning').length;
@@ -266,6 +321,7 @@ export function evaluateClaim(record: MemberRecord, claimType: ClaimType, purpos
     maximumEligibleAmount,
     checks,
     alternatives,
+    notTheBlocker,
   };
 }
 
