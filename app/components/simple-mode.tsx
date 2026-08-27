@@ -15,6 +15,7 @@ import {
 import type { AssistPrefs } from '../lib/assist';
 import { speak, stopSpeaking, t } from '../lib/assist';
 import { assessStatus, delayGrievance, delayRti, type StatusStage } from '../lib/claim-status';
+import { VoiceIntake, type Heard } from './voice-intake';
 import {
   evaluateClaim,
   formatCurrency,
@@ -161,6 +162,21 @@ export function SimpleMode({
         <p className="simple-kicker">{t('tagline', lang)}</p>
         <p className="simple-kicker-sub">{t('taglineSub', lang)}</p>
         <h1 className="simple-question">{t('q_what', lang)}</h1>
+
+        <VoiceIntake
+          lang={lang}
+          onHeard={(h: Heard) => {
+            /* Voice picks the journey and pre-fills what it actually heard.
+               Anything it did not hear stays unset, so the member is still
+               asked rather than having a number invented for them. */
+            if (h.journey) setJourney(h.journey);
+            if (h.journey === 'waiting') {
+              setStep(h.daysWaiting !== null ? 1 : 0);
+              if (h.daysWaiting !== null) setFiledDays(h.daysWaiting);
+            }
+            if (h.rejectionText) setRejectText(h.rejectionText);
+          }}
+        />
 
         <div className="simple-choices">
           <BigChoice

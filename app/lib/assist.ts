@@ -152,6 +152,22 @@ export const T: Dict = {
   fix_this: { en: 'Fix this first', hi: 'पहले यह ठीक कीजिए' },
   max_eligible: { en: 'Most you can claim right now', hi: 'अभी आप ज़्यादा से ज़्यादा इतना ले सकते हैं' },
 
+  voice_prompt: { en: 'Just say what the problem is', hi: 'बस बोलिए कि दिक्कत क्या है' },
+  voice_hint: {
+    en: 'Speak in any Indian language. Hindi, Kannada, Tamil, Bangla, Marathi, Telugu or English.',
+    hi: 'किसी भी भारतीय भाषा में बोलिए। हिंदी, कन्नड़, तमिल, बांग्ला, मराठी, तेलुगु या अंग्रेज़ी।',
+  },
+  voice_speak: { en: 'Speak instead of tapping', hi: 'टैप करने के बजाय बोलिए' },
+  voice_stop: { en: 'Stop', hi: 'रोकिए' },
+  voice_working: { en: 'Listening to it', hi: 'सुन रहे हैं' },
+  voice_failed: { en: 'That did not work. Use the buttons instead.', hi: 'यह नहीं हो पाया। बटन इस्तेमाल कीजिए।' },
+  voice_nomic: { en: 'This browser will not give us the microphone.', hi: 'यह ब्राउज़र माइक नहीं दे रहा।' },
+  voice_denied: { en: 'Microphone permission was refused.', hi: 'माइक की अनुमति नहीं मिली।' },
+  voice_note: {
+    en: 'The recording goes to an OpenAI model to become text, and is not stored. Answers come back in English or Hindi, the versions a person has checked.',
+    hi: 'रिकॉर्डिंग को टेक्स्ट बनाने के लिए ओपनएआई मॉडल के पास भेजा जाता है, संभाला नहीं जाता। जवाब अंग्रेज़ी या हिंदी में आते हैं, जिन्हें इंसान ने जांचा है।',
+  },
+
   not_blocker: { en: 'Do not waste time on this', hi: 'इस पर समय बर्बाद मत कीजिए' },
   rule_version: { en: 'Rule version', hi: 'नियम संस्करण' },
 
