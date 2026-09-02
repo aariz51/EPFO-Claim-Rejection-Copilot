@@ -176,3 +176,57 @@ the numbers stay identical.
 All member records, identifiers, balances, field-office states, and outcomes in
 this prototype are synthetic. The day counts in the waiting journey are computed
 from a date you choose, not read from any live claim. Government API access, automatic grievance submission, rule ingestion, and legal sign-off are mocked or proposed. Production rules must be versioned, linked to the exact official paragraph, and reviewed before activation.
+
+## How the models are used
+
+Built with Codex throughout. At runtime two OpenAI models do two narrow jobs.
+
+| Model | Job |
+|---|---|
+| `gpt-4o-transcribe` | Hears a member describing their situation in any Indian language |
+| `gpt-4.1-mini` | Maps an unrecognised rejection remark onto a structured payload, and routes spoken input to the right journey |
+
+The rejection decoder is the one place a model earns its keep. The proposal in
+this project is that EPFO should stop returning free text and start returning a
+structured payload: `rule_id`, `required_value`, `actual_value`, `remedy_code`,
+`responsible_owner`, `appeal_by`. Until it does, something has to turn the free
+text into that shape, and the remarks arrive in an unbounded number of phrasings
+across offices.
+
+**Known patterns are matched deterministically first.** A member deciding what to
+do deserves the same answer every time they ask. The model is asked only about
+text the rule table does not recognise, and its output is validated into the same
+contract before it is shown. Every check carries `RULE_SET_VERSION`, so an answer
+can be traced to the revision that produced it.
+
+Without an API key the route returns the deterministic result and says so on
+screen. It never presents a template as model output.
+
+## Running it
+
+```bash
+npm install
+npm run dev
+```
+
+Voice input and the rejection decoder need an OpenAI key. The claim clock, the
+20-day charter check, the penal interest calculation and the grievance drafter all
+run without one.
+
+```bash
+OPENAI_API_KEY=sk-...
+```
+
+This app builds with `vinext` rather than the Next.js CLI. Deploying to Vercel
+uses `node scripts/build-vercel.mjs`, which emits Build Output API v3 directly so
+Vercel does no framework inference.
+
+## Tests
+
+```bash
+npm test    # node --test over app/lib/*.test.ts
+```
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).

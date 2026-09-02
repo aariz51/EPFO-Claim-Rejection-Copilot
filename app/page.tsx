@@ -13,7 +13,7 @@
  */
 
 export const metadata = {
-  title: 'PF Precheck - it is your money',
+  title: 'It is your money',
   description:
     "EPFO's own charter gives it 20 days. PF Precheck counts your claim against that limit, names the role holding your file, and computes what the delay is worth in rupees.",
 };
